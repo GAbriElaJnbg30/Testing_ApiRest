@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Actividades</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Enlaza la hoja de estilos -->
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <h1>Gestión de Actividades</h1>
+            <h2>Agregar Nueva Actividad</h2>
+            <input type="text" id="nombre" placeholder="Nombre de la actividad" />
+            <input type="text" id="descripcion" placeholder="Descripción" />
+            <button onclick="agregarActividad()">Agregar Actividad</button>
+
+            <h2>Buscar y Modificar Actividad</h2>
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Buscar actividad por ID" />
+                <button onclick="buscarActividad()">Buscar</button>
+            </div>
+
+            <h2>Resultados de Búsqueda</h2>
+            <div id="result-container" class="result-container">
+                <input type="text" id="result-nombre" placeholder="Nombre de la actividad" disabled />
+                <input type="text" id="result-descripcion" placeholder="Descripción" disabled />
+                <button id="edit-button" onclick="activarEdicion()" disabled>Modificar</button>
+                <button id="save-button" onclick="modificarActividad()" disabled>Guardar Cambios</button>
+                <button id="delete-button" onclick="eliminarActividad()" disabled>Eliminar</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <h2>Lista de Actividades</h2>
+            <table id="actividades-visuales">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        let actividades = []; // Almacenar actividades globalmente
+        let actividadSeleccionada; // Almacena la actividad seleccionada para modificar o eliminar
+
+        // Función para obtener y mostrar actividades
+        function obtenerActividades() {
+            fetch('http://localhost:8080/actividades')
+                .then(response => response.json())
+                .then(data => {
+                    actividades = data; // Guardar actividades en variable global
+                    actualizarTabla();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Función para actualizar la tabla
+        function actualizarTabla() {
+            const actividadesVisuales = document.querySelector('#actividades-visuales tbody');
+            actividadesVisuales.innerHTML = ''; // Limpiar tabla anterior
+
+            actividades.forEach(actividad => {
+                // Fila para la tabla visual
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${actividad.id}</td>
+                    <td>${actividad.nombre}</td>
+                    <td>${actividad.descripcion}</td>
+                `;
+                actividadesVisuales.appendChild(row);
+            });
+        }
+
+        // Función para agregar una nueva actividad
+        function agregarActividad() {
+            const nombre = document.getElementById('nombre').value;
+            const descripcion = document.getElementById('descripcion').value;
+
+            const nuevaActividad = { nombre: nombre, descripcion: descripcion };
+
+            fetch('http://localhost:8080/actividades', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(nuevaActividad),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        obtenerActividades(); // Actualizar lista de actividades
+                        document.getElementById('nombre').value = '';
+                        document.getElementById('descripcion').value = '';
+                    } else {
+                        console.error('Error al agregar actividad');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Función para eliminar una actividad
+        function eliminarActividad() {
+            if (!actividadSeleccionada) {
+                alert('No hay actividad seleccionada para eliminar.');
+                return;
+            }
+
+            fetch(`http://localhost:8080/actividades/${actividadSeleccionada.id}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        obtenerActividades(); // Actualizar lista de actividades
+                        resetearFormulario(); // Resetear formulario
+                    } else {
+                        console.error('Error al eliminar actividad');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Función para buscar una actividad
+        function buscarActividad() {
+            const idBuscar = document.getElementById('search').value;
+            const actividad = actividades.find(a => a.id == idBuscar);
+
+            // Limpiar resultados anteriores
+            resetearFormulario();
+
+            if (actividad) {
+                actividadSeleccionada = actividad; // Almacenar actividad seleccionada
+                document.getElementById('result-nombre').value = actividad.nombre;
+                document.getElementById('result-descripcion').value = actividad.descripcion;
+                document.getElementById('result-container').style.display = 'block'; // Mostrar contenedor de resultados
+                document.getElementById('edit-button').disabled = false; // Activar botón de editar
+                document.getElementById('delete-button').disabled = false; // Activar botón de eliminar
+            } else {
+                alert('Actividad no encontrada');
+            }
+        }
+
+        // Función para activar la edición de la actividad
+        function activarEdicion() {
+            document.getElementById('result-nombre').disabled = false; // Activar input de nombre
+            document.getElementById('result-descripcion').disabled = false; // Activar input de descripción
+            document.getElementById('save-button').disabled = false; // Activar botón de guardar
+        }
+
+        // Función para modificar una actividad
+        function modificarActividad() {
+            if (!actividadSeleccionada) {
+                alert('No hay actividad seleccionada para modificar.');
+                return;
+            }
+
+            const nombre = document.getElementById('result-nombre').value;
+            const descripcion = document.getElementById('result-descripcion').value;
+
+            const actividadModificada = { nombre: nombre, descripcion: descripcion };
+
+            fetch(`http://localhost:8080/actividades/${actividadSeleccionada.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(actividadModificada),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        obtenerActividades(); // Actualizar lista de actividades
+                        resetearFormulario(); // Resetear formulario
+                    } else {
+                        console.error('Error al modificar actividad');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Función para resetear el formulario
+        function resetearFormulario() {
+            document.getElementById('search').value = '';
+            document.getElementById('result-nombre').value = '';
+            document.getElementById('result-descripcion').value = '';
+            document.getElementById('result-container').style.display = 'none'; // Ocultar contenedor de resultados
+            actividadSeleccionada = null; // Resetear actividad seleccionada
+            document.getElementById('edit-button').disabled = true; // Desactivar botón de editar
+            document.getElementById('delete-button').disabled = true; // Desactivar botón de eliminar
+            document.getElementById('save-button').disabled = true; // Desactivar botón de guardar
+            document.getElementById('result-nombre').disabled = true; // Desactivar input de nombre
+            document.getElementById('result-descripcion').disabled = true; // Desactivar input de descripción
+        }
+
+        // Inicializar actividades al cargar la página
+        obtenerActividades();
+    </script>
+</body>
+</html>
