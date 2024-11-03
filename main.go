@@ -36,6 +36,7 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 
 	// Conexión a MySQL
+
 	dataSource = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 
 	r := mux.NewRouter()

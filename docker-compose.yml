@@ -5,3 +5,23 @@ services:
     build: .
     ports:
       - 8080:8080
+    environment:
+        DB_HOST: db
+        DB_PORT: 3306
+        DB_USER: root
+        DB_PASSWORD: gn300803 # si quieres dejar la contraseña en blanco
+        DB_NAME: actComp
+
+  db:
+    image: mysql:5.7  # Puedes cambiar la versión si es necesario
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: gn300803 # Deja en blanco para no tener contraseña
+      MYSQL_DATABASE: actComp  # Nombre de la base de datos
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
