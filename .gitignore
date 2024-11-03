@@ -1,0 +1,5 @@
+# Ignorar el archivo .env ya que contiene información sensible
+.env
+
+# Ignorar el archivo docker-compose.yml ya que contiene información sensible
+docker-compose.yml
