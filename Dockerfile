@@ -1,21 +1,17 @@
-# Usa una imagen oficial de Go
-FROM golang:1.20
+FROM golang 
 
-# Establece el directorio de trabajo
-WORKDIR /app
+# donde se encontrara el codigo de nuestra aplicacion dentro del contenedor
+WORKDIR /api-rest
 
-# Copia el archivo go.mod y go.sum y descarga las dependencias
 COPY go.mod ./
+COPY go.sum ./
+COPY .env ./
 RUN go mod download
 
-# Copia el resto del código
-COPY . .
+COPY *go ./
 
-# Compila el programa
-RUN go build -o main .
+RUN go build -o /api
 
-# Define el puerto
 EXPOSE 8080
 
-# Ejecuta el binario
-CMD ["./main"]
+CMD ["/api"]
