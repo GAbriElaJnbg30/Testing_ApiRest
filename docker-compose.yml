@@ -11,6 +11,19 @@ services:
         DB_USER: root
         DB_PASSWORD: gn300803 # si quieres dejar la contraseña en blanco
         DB_NAME: actComp
+  jenkins:
+    container_name: jenkins_compose
+    image: jenkins/jenkins:latest
+    ports:
+      - "8082:8080"
+      - "50001:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    restart: always
+    networks:
+      - net_jenkins
+
+
 
   db:
     image: mysql:5.7  # Puedes cambiar la versión si es necesario
@@ -25,3 +38,6 @@ services:
 
 volumes:
   mysql_data:
+  jenkins_home:
+networks:
+  net_jenkins:
