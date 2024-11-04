@@ -1,17 +1,11 @@
 #!/bin/bash
 
-# Credenciales
-USERNAME="goretti"
-PASSWORD="gn300803"
+# Prueba del endpoint GET /actividades
+response=$(curl -u "goretti:gn300803" -s -o /dev/null -w "%{http_code}" "http://localhost:8080/actividades")
 
-# Endpoint base
-BASE_URL="http://localhost:8080/actividades"
-
-# Test: GET /actividades
-echo "Test: GET /actividades"
-response=$(curl -u "$USERNAME:$PASSWORD" -s -o /dev/null -w "%{http_code}" "$BASE_URL")
-if [[ "$response" -eq 200 ]]; then
-    echo "GET /actividades: OK (Status Code: $response)"
+if [ "$response" -eq 200 ]; then
+    echo "Test: GET /actividades: Passed (Status Code: $response)"
 else
-    echo "GET /actividades: Failed (Status Code: $response)"
+    echo "Test: GET /actividades: Failed (Status Code: $response)"
+    exit 1
 fi
