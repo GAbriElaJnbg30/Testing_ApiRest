@@ -95,3 +95,10 @@ Funciones probadas, solo algunas requieren autorizacion por seguridad, pero todo
 ![PUT](images/image-10.png)
 
 ![DELETE Y FINALIZACION EXITOSA](images/image-11.png)
+
+
+Una de mi aplicaion funcionando:
+![apirestGo](images/image-12.png)
+
+Mi docker:
+![docker](images/image-13.png)
