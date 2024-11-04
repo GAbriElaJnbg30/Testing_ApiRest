@@ -61,5 +61,3 @@ Status: correcto
 
 Cambios: correcto
 ![cambios](images/image-8.png)
-=======
->>>>>>> 611baf60a942f2dde2155af9dedc98db1eafded2
