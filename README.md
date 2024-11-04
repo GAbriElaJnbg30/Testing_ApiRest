@@ -25,39 +25,73 @@ Aqu especificamos donde esta el repositorio, en mi caso en el main
 Creando un nuevo paso...
 ![creacionpaso](images/image-5.png)
 
+=========================================================================================================================
+*********************************************** CODIGO DE PRUEBA ******************************************                                        
+=========================================================================================================================
 código de mi prueba:
 #!/bin/bash
 
-API_URL="http://localhost:8080/actividades"
+# Definir las credenciales
+USER="root"
+PASSWORD="gn300803"
+API_URL="http://localhost:8080" # Cambia esto si es necesario
 
-# Prueba de Obtener Actividades
-echo "Prueba de Obtener Actividades"
-RESPONSE_GET=$(curl -s -o /dev/null -w "%{http_code}" $API_URL)
-echo "Código de respuesta GET: $RESPONSE_GET"
+# Prueba GET: Obtener todas las actividades
+echo "Prueba GET: Obtener todas las actividades"
+GET_RESPONSE=$(curl -u "$USER:$PASSWORD" -X GET "$API_URL/actividades")
+echo "$GET_RESPONSE"
+if [ $? -eq 0 ]; then
+    echo "GET: correcto"
+else
+    echo "GET: error"
+fi
 
-# Prueba de Crear Actividad
-echo "Prueba de Crear Actividad"
-NEW_ACTIVITY='{"nombre":"Actividad de Prueba","descripcion":"Descripción de la actividad de prueba"}'
-RESPONSE_POST=$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d "$NEW_ACTIVITY" $API_URL)
-echo "Código de respuesta POST: $RESPONSE_POST"
+# Prueba POST: Crear una nueva actividad
+echo "Prueba POST: Crear una nueva actividad"
+NEW_ACTIVITY='{"nombre": "Actividad de prueba", "descripcion": "Descripción de prueba"}'
+POST_RESPONSE=$(curl -u "$USER:$PASSWORD" -X POST "$API_URL/actividades" -H "Content-Type: application/json" -d "$NEW_ACTIVITY")
+echo "$POST_RESPONSE"
+if [ $? -eq 0 ]; then
+    echo "POST: correcto"
+else
+    echo "POST: error"
+fi
 
-# Prueba de Actualizar Actividad
-echo "Prueba de Actualizar Actividad"
-ACTIVITY_ID=1  # Cambia esto según el ID de la actividad que creaste
-UPDATED_ACTIVITY='{"nombre":"Actividad Actualizada","descripcion":"Descripción actualizada"}'
-RESPONSE_PUT=$(curl -s -o /dev/null -w "%{http_code}" -X PUT -H "Content-Type: application/json" -d "$UPDATED_ACTIVITY" $API_URL/$ACTIVITY_ID)
-echo "Código de respuesta PUT: $RESPONSE_PUT"
+# Prueba PUT: Actualizar la actividad con ID 1
+echo "Prueba PUT: Actualizar la actividad con ID 1"
+UPDATE_ACTIVITY='{"nombre": "Actividad actualizada", "descripcion": "Descripción actualizada"}'
+PUT_RESPONSE=$(curl -u "$USER:$PASSWORD" -X PUT "$API_URL/actividades/1" -H "Content-Type: application/json" -d "$UPDATE_ACTIVITY")
+echo "$PUT_RESPONSE"
+if [ $? -eq 0 ]; then
+    echo "PUT: correcto"
+else
+    echo "PUT: error"
+fi
 
-# Prueba de Eliminar Actividad
-echo "Prueba de Eliminar Actividad"
-RESPONSE_DELETE=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE $API_URL/$ACTIVITY_ID)
-echo "Código de respuesta DELETE: $RESPONSE_DELETE"
+# Prueba DELETE: Eliminar la actividad con ID 1
+echo "Prueba DELETE: Eliminar la actividad con ID 1"
+DELETE_RESPONSE=$(curl -u "$USER:$PASSWORD" -X DELETE "$API_URL/actividades/1")
+echo "$DELETE_RESPONSE"
+if [ $? -eq 0 ]; then
+    echo "DELETE: correcto"
+else
+    echo "DELETE: error"
+fi
 
-Contruimos el trabajo ahora:
-![contruccion](images/image-6.png)
+echo "Pruebas completadas."
 
-Status: correcto
-![status](images/image-7.png)
+========================================================================================
+Contruimos el trabajo ahora, status correcto:
+![construccion](images/image-6.png)
 
-Cambios: correcto
-![cambios](images/image-8.png)
+Salida de la consola, correcta:
+![salidaConsola-correcta](images/image-7.png)
+
+Funciones probadas, solo algunas requieren autorizacion por seguridad, pero todo bien:
+![GET](images/image-8.png)
+
+![POST](images/image-9.png)
+
+![PUT](images/image-10.png)
+
+![DELETE Y FINALIZACION EXITOSA](images/image-11.png)
