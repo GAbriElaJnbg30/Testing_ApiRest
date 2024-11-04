@@ -5,6 +5,7 @@ Realiza una prueba de tu API REST utilizando jenkins.
 Mostrar el codigo para las pruebas
 Poner capturas de pantalla en tu repositorio
 Utiliza un archivo README para mostrar las capturas
+<<<<<<< HEAD
 ========================================================================================
 Ok, estamos utilizando Jenkins
 ![Panel donde vamos a crear el job](images/image.png)
@@ -60,3 +61,5 @@ Status: correcto
 
 Cambios: correcto
 ![cambios](images/image-8.png)
+=======
+>>>>>>> 611baf60a942f2dde2155af9dedc98db1eafded2
