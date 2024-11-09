@@ -11,21 +11,21 @@ Ahora bien, vamos a ponerle un titulo a la tarea y elegir un item type, en mi ca
 ![Tarea e Item](images/image.png)
 
 Aquí añado una descripción sobre la acción que haré:
-![Descripción](image-1.png)
+![Descripción](images/image-1.png)
 
 Dado a que tengo un código para el TEST de mi API:
-![Codigo TEST](image-2.png) 
+![Codigo TEST](images/image-2.png) 
 NOTA* EL CÓDIGO FUENTE DE MI PROGRAMA SE ENCUENRTA AQUÍ EN EL REPOSITORIO CON EL NOMBRE DE:
 "test_api.sh"
 
 Configuramos el origen del código fuente, en este caso el de mi proyecto en git:
-![Origen del código fuente](image-3.png)
+![Origen del código fuente](images/image-3.png)
 
 Aqu especificamos donde esta el repositorio, en mi caso en el main:
-![Especificar Branch](image-4.png)
+![Especificar Branch](images/image-4.png)
 
 Creando un nuevo paso...
-![Creacion del Paso](image-5.png)
+![Creacion del Paso](images/image-5.png)
 NOTA* Aqui hacemos la llamada con el nombre del archivo: "./test_api.sh", el cual si se encontrará en el
 origen del código fuente (github) que le brindamos en un paso anterior
 
@@ -89,21 +89,21 @@ else
 fi
 echo "====================="
 
-========================================================================================
+============================================================================================================
 Contruimos el trabajo ahora:
-![Construcción](image-6.png)
+![Construcción](images/image-6.png)
 
 Status de la construcción:
-![Status](image-7.png)
+![Status](images/image-7.png)
 
 Salida de la consola correcta pt.1:
-![Salida Consola](image-8.png)
+![Salida Consola](images/image-8.png)
 
 Salida de la consola correcta pt.2:
-![Salida Consola](image-9.png)
+![Salida Consola](images/image-9.png)
 
 Salida de la consola correcta pt.3:
-![Salida Consola](image-10.png)
+![Salida Consola](images/image-10.png)
 
 NOTA* Como podemos ver las pruebas se ejecutaron con éxito, en el método GET obtiene respuesta de la API con los
 datos que se tienen registrados, los demás métodos funcionan correctamente, ya que al ejecutar, el método POST crea
@@ -112,25 +112,25 @@ PUT actualizó la actividad con el ID 2 de manerana correcta que ya no se ve por
 mismo nos hace mención el código de prueba que las 4 pruebas de los métodos se realizaron con éxito:
 
 MÉTODO GET:
-![GET](image-11.png)
+![GET](images/image-11.png)
 
 MÉTODO POST:
-![POST](image-12.png)
+![POST](images/image-12.png)
 
 MÉTODO PUT:
-![PUT](image-13.png)
+![PUT](images/image-13.png)
 
 MÉTODO DELETE:
-![DELETE](image-14.png)
+![DELETE](images/image-14.png)
 
 FINALIZACIÓN EXITOSA DE LA PRUEBA:
-![FINALIZACIÓN](image-15.png)
+![FINALIZACIÓN](images/image-15.png)
 
 Captura de mi aplicación funcionando antes de la ejecución de las pruebas:
-![apirestGo](images/image-12.png)
+![apirestGo](images/images/image-12.png)
 
 Captura de mi aplicación funcionando después de la ejecución de las pruebas:
-![apirestGO](image-16.png)
+![apirestGO](images/image-16.png)
 
 Mi docker:
-![docker](image-17.png)
+![docker](images/image-17.png)
