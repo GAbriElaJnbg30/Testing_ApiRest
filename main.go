@@ -7,9 +7,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/handlers" // Asegúrate de incluir esto
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
@@ -21,6 +23,49 @@ type Actividad struct {
 }
 
 var dataSource string
+var mySigningKey = []byte("mi_clave_secreta")
+
+// Crear el token JWT
+func CreateToken() (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": "goretti",
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+	})
+
+	signedToken, err := token.SignedString(mySigningKey)
+	if err != nil {
+		return "", err
+	}
+
+	return signedToken, nil
+}
+
+// Middleware para verificar el token JWT
+func TokenMiddleware() mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			tokenString := r.Header.Get("Authorization")
+			if tokenString == "" {
+				http.Error(w, "Token requerido", http.StatusUnauthorized)
+				return
+			}
+
+			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fmt.Errorf("Metodo de firma no válido")
+				}
+				return mySigningKey, nil
+			})
+
+			if err != nil || !token.Valid {
+				http.Error(w, "Token inválido", http.StatusUnauthorized)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
 
 func main() {
 	// Cargar configuración desde .env
@@ -36,15 +81,29 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 
 	// Conexión a MySQL
-
 	dataSource = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4", dbUser, dbPassword, dbHost, dbPort, dbName)
-	//dataSource = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 
 	r := mux.NewRouter()
+
+	// Ruta para login (para obtener un token)
+	r.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		token, err := CreateToken()
+		if err != nil {
+			http.Error(w, "Error al crear el token", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"token": token})
+	}).Methods("GET")
+
+	// Rutas protegidas por el middleware de autenticación
 	r.HandleFunc("/actividades", getActividades).Methods("GET")
 	r.HandleFunc("/actividades", createActividad).Methods("POST")
 	r.HandleFunc("/actividades/{id}", updateActividad).Methods("PUT")
 	r.HandleFunc("/actividades/{id}", deleteActividad).Methods("DELETE")
+
+	// Aplicar el middleware de autenticación a las rutas protegidas
+	r.Use(TokenMiddleware())
 
 	// Habilitar CORS
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
