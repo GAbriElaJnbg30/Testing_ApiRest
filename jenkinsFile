@@ -19,6 +19,8 @@ pipeline {
                     sh "docker stop apirestgo-api-go-container || true"
                     sh "docker rm apirestgo-api-go-container || true"
                     sh "docker run -d --name apirestgo-api-go-container -p 8080:8080 apirestgo-api-go:latest"
+                    // Verificar que el contenedor se esté ejecutando correctamente
+                    sh "docker ps -a"
                 }
             }
         }
@@ -26,10 +28,10 @@ pipeline {
         stage('Ejecutar Pruebas de API') {
             steps {
                 script {
-                    // Usando el token de GitHub almacenado en la variable de entorno
-                    sh """
+                    // Si no necesitas autenticar con GitHub, simplemente omite la cabecera
                     echo "Probando conexión a la API..."
-                    curl -X GET "${API_URL}" -H "Authorization: Bearer ${GITHUB_TOKEN}"
+                    sh """
+                    curl -X GET "${API_URL}"
                     """
                 }
             }
