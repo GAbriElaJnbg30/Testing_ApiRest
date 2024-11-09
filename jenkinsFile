@@ -11,10 +11,6 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    def goPath = tool name: 'Go', type: 'GoTool'
-                    env.GOROOT = "${goPath}/go"
-                    env.GOPATH = "${goPath}"
-                    env.PATH = "${goPath}/bin:${env.PATH}"
                     sh 'go version'
                     sh 'go mod tidy'
                     sh 'go build -o app .'
