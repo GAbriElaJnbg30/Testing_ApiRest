@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_CREDENTIALS = credentials('4af24fb6-77b4-453b-b750-a3b2771dfde9')
+        GITHUB_CREDENTIALS = credentials('4af24fb6-77b4-453b-b750-a3b2771dfde9') // Se asume que este es un token de GitHub
         API_URL = 'http://localhost:8080/actividades'
     }
 
@@ -17,11 +17,19 @@ pipeline {
             steps {
                 script {
                     // Detiene el contenedor si está en ejecución
-                    sh "docker stop apirestgo-api-go-container || true"
-                    sh "docker rm apirestgo-api-go-container || true"
-
+                    sh """
+                    docker stop apirestgo-api-go-container || true
+                    docker rm apirestgo-api-go-container || true
+                    """
+                    
                     // Inicia el contenedor a partir de la imagen ya construida
-                    sh "docker run -d --name apirestgo-api-go-container -p 8080:8080 apirestgo-api-go:latest"
+                    def dockerRunCmd = "docker run -d --name apirestgo-api-go-container -p 8080:8080 apirestgo-api-go:latest"
+                    try {
+                        sh dockerRunCmd
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Error al iniciar el contenedor Docker: ${e.message}"
+                    }
                 }
             }
         }
@@ -30,10 +38,17 @@ pipeline {
             steps {
                 script {
                     // Realiza una solicitud GET a la API
-                    sh """
-                    echo "Probando conexión a la API..."
-                    curl -X GET "${API_URL}" -H "Authorization: Bearer ${GITHUB_CREDENTIALS}"
-                    """
+                    try {
+                        echo "Probando conexión a la API..."
+                        def response = sh(script: "curl -s -o /dev/null -w '%{http_code}' -X GET '${API_URL}'", returnStdout: true).trim()
+
+                        if (response != '200') {
+                            error "La API no respondió correctamente. Código de estado: ${response}"
+                        }
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Error al ejecutar pruebas de la API: ${e.message}"
+                    }
                 }
             }
         }
