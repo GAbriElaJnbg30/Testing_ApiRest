@@ -1,47 +1,25 @@
 pipeline {
     agent any
-
-    environment {
-        GITHUB_TOKEN = credentials('github-token')  // Usa el ID de la credencial
-        API_URL = 'http://localhost:8080/actividades'
-    }
-
     stages {
-        stage('Clonar Repositorio') {
-            steps {
-                git url: 'https://github.com/GAbriElaJnbg30/Testing_ApiRest.git', credentialsId: 'github-token'
-            }
-        }
-
-        stage('Ejecutar Contenedor') {
+        stage('Checkout SCM') {
             steps {
                 script {
-                    sh "docker stop apirestgo-api-go-container || true"
-                    sh "docker rm apirestgo-api-go-container || true"
-                    sh "docker run -d --name apirestgo-api-go-container -p 8080:8080 apirestgo-api-go:latest"
-                    // Verificar que el contenedor se esté ejecutando correctamente
-                    sh "docker ps -a"
+                    git branch: 'main', credentialsId: 'github-token', url: 'https://github.com/GAbriElaJnbg30/Testing_ApiRest.git'
                 }
             }
         }
-
-        stage('Ejecutar Pruebas de API') {
-            steps {
-                script {
-                    // Si no necesitas autenticar con GitHub, simplemente omite la cabecera
-                    echo "Probando conexión a la API..."
-                    sh """
-                    curl -X GET "${API_URL}"
-                    """
-                }
-            }
-        }
+        // Otras etapas...
     }
-
     post {
         always {
-            sh "docker stop apirestgo-api-go-container || true"
-            sh "docker rm apirestgo-api-go-container || true"
+            script {
+                try {
+                    sh 'docker stop apirestgo-api-go-container'
+                    sh 'docker rm apirestgo-api-go-container'
+                } catch (Exception e) {
+                    echo 'Docker container not found or already stopped.'
+                }
+            }
         }
     }
 }
