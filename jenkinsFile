@@ -1,25 +1,45 @@
 pipeline {
     agent any
+
     stages {
         stage('Checkout SCM') {
             steps {
+                git branch: 'main', credentialsId: 'github-token', url: 'https://github.com/GAbriElaJnbg30/Testing_ApiRest.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
                 script {
-                    git branch: 'main', credentialsId: 'github-token', url: 'https://github.com/GAbriElaJnbg30/Testing_ApiRest.git'
+                    def goPath = tool name: 'Go', type: 'GoTool'
+                    env.GOROOT = "${goPath}/go"
+                    env.GOPATH = "${goPath}"
+                    env.PATH = "${goPath}/bin:${env.PATH}"
+                    sh 'go version'
+                    sh 'go mod tidy'
+                    sh 'go build -o app .'
                 }
             }
         }
-        // Otras etapas...
-    }
-    post {
-        always {
-            script {
-                try {
-                    sh 'docker stop apirestgo-api-go-container'
-                    sh 'docker rm apirestgo-api-go-container'
-                } catch (Exception e) {
-                    echo 'Docker container not found or already stopped.'
+
+        stage('Test') {
+            steps {
+                script {
+                    sh 'go test -v ./...'
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
