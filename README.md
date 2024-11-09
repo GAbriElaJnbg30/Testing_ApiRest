@@ -21,7 +21,7 @@ NOTA* EL CÓDIGO FUENTE DE MI PROGRAMA SE ENCUENRTA AQUÍ EN EL REPOSITORIO CON 
 Configuramos el origen del código fuente, en este caso el de mi proyecto en git:
 ![Origen del código fuente](images/image-3.png)
 
-Aqu especificamos donde esta el repositorio, en mi caso en el main:
+Aquí especificamos donde esta el repositorio, en mi caso en el main:
 ![Especificar Branch](images/image-4.png)
 
 Creando un nuevo paso...
@@ -125,9 +125,6 @@ MÉTODO DELETE:
 
 FINALIZACIÓN EXITOSA DE LA PRUEBA:
 ![FINALIZACIÓN](images/image-15.png)
-
-Captura de mi aplicación funcionando antes de la ejecución de las pruebas:
-![apirestGo](images/images/image-12.png)
 
 Captura de mi aplicación funcionando después de la ejecución de las pruebas:
 ![apirestGO](images/image-16.png)
