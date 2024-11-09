@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # URL de la API
-URL="http://172.17.0.1:8080"
+URL="http://localhost:8080"
 
 # Función para verificar respuestas HTTP
 check_response() {
@@ -9,16 +9,16 @@ check_response() {
     echo "✅ Prueba pasada para $3"
   else
     echo "❌ Prueba fallida para $3"
+    echo "Código de respuesta HTTP: $1"
     exit 1
   fi
 }
 
 # Prueba: Obtener todas las actividades
-# Prueba: GET /actividades
 echo "Prueba: GET /actividades"
 response=$(curl -s -w "%{http_code}" -o response_body.txt "$URL/actividades")
 echo "Respuesta completa: $(cat response_body.txt)"
-check_response $response 200 "GET /actividades"
+check_response $(echo $response | tail -n 1) 200 "GET /actividades"
 
 
 # Prueba: Crear una nueva actividad
@@ -27,12 +27,6 @@ response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$URL/actividades" \
   -H "Content-Type: application/json" \
   -d '{"nombre": "Nueva Actividad", "descripcion": "Prueba de creación"}')
 check_response $response 201 "POST /actividades"
-
-#echo "Prueba: POST /actividades"
-#curl -X POST "$URL/actividades" \
-#  -H "Content-Type: application/json" \
-#  -d '{"nombre": "Nueva Actividad", "descripcion": "Prueba de creación"}' -v
-
 
 # Prueba: Actualizar una actividad existente
 echo "Prueba: PUT /actividades/1"
