@@ -13,14 +13,17 @@ pipeline {
         }
 
         stage('Build and Test') {
-            steps {
-                script {
-                    docker.build('my-go-app', '.').inside {
-                        sh 'go version'
-                        sh 'go build -o app .'
-                        sh 'go test -v ./...'
-                    }
+            agent {
+                docker {
+                    image 'golang:1.23.2'
+                    args '-v /go/pkg/mod:/go/pkg/mod -v /go/bin:/go/bin' // Ajusta los volúmenes según tu entorno
                 }
+            }
+            steps {
+                sh 'go version'
+                sh 'go mod tidy'
+                sh 'go build -o app .'
+                sh 'go test -v ./...'
             }
         }
     }
