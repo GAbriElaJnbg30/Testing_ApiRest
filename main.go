@@ -37,8 +37,7 @@ func main() {
 
 	// Conexión a MySQL
 
-	dataSource = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4", dbUser, dbPassword, dbHost, dbPort, dbName)
-	//dataSource = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
+	dataSource = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/actividades", getActividades).Methods("GET")
