@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    environment {
+        GITHUB_CREDENTIALS = credentials('4af24fb6-77b4-453b-b750-a3b2771dfde9')
+        API_URL = 'http://localhost:8080/actividades'
+    }
+
+    stages {
+        stage('Clonar Repositorio') {
+            steps {
+                git url: 'https://github.com/GAbriElaJnbg30/Testing_ApiRest.git', credentialsId: "${GITHUB_CREDENTIALS}"
+            }
+        }
+
+        stage('Ejecutar Contenedor') {
+            steps {
+                script {
+                    // Detiene el contenedor si está en ejecución
+                    sh "docker stop apirestgo-api-go-container || true"
+                    sh "docker rm apirestgo-api-go-container || true"
+
+                    // Inicia el contenedor a partir de la imagen ya construida
+                    sh "docker run -d --name apirestgo-api-go-container -p 8080:8080 apirestgo-api-go:latest"
+                }
+            }
+        }
+
+        stage('Ejecutar Pruebas de API') {
+            steps {
+                script {
+                    // Realiza una solicitud GET a la API
+                    sh """
+                    echo "Probando conexión a la API..."
+                    curl -X GET "${API_URL}" -H "Authorization: Bearer ${GITHUB_CREDENTIALS}"
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline terminado.'
+            // Detiene y elimina el contenedor después del pipeline
+            sh "docker stop apirestgo-api-go-container || true"
+            sh "docker rm apirestgo-api-go-container || true"
+        }
+        success {
+            echo 'Las pruebas de la API se completaron con éxito.'
+        }
+        failure {
+            echo 'Hubo un error en las pruebas de la API.'
+        }
+    }
+}
