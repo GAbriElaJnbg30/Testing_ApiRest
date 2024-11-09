@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        GO_VERSION = '1.23.2' // Ajusta a la versión de Go que estás usando
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
@@ -8,20 +12,14 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build and Test') {
             steps {
                 script {
-                    sh 'go version'
-                    sh 'go mod tidy'
-                    sh 'go build -o app .'
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                script {
-                    sh 'go test -v ./...'
+                    docker.build('my-go-app', '.').inside {
+                        sh 'go version'
+                        sh 'go build -o app .'
+                        sh 'go test -v ./...'
+                    }
                 }
             }
         }
