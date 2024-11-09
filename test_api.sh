@@ -14,9 +14,12 @@ check_response() {
 }
 
 # Prueba: Obtener todas las actividades
+# Prueba: GET /actividades
 echo "Prueba: GET /actividades"
-response=$(curl -s -o /dev/null -w "%{http_code}" "$URL/actividades")
+response=$(curl -s -w "%{http_code}" -o response_body.txt "$URL/actividades")
+echo "Respuesta completa: $(cat response_body.txt)"
 check_response $response 200 "GET /actividades"
+
 
 # Prueba: Crear una nueva actividad
 echo "Prueba: POST /actividades"
