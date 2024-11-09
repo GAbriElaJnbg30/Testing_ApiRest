@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# URL de la API
-URL="http://localhost:8080"
+# Obtener el token
+TOKEN=$(curl -X POST http://localhost:8080/login -d "username=root&password=gn300803" | jq -r '.token')
+
+# Usar el token en las pruebas
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/actividades
 
 # Función para verificar respuestas HTTP
 check_response() {
